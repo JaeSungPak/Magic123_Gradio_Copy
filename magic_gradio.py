@@ -22,8 +22,8 @@ with gr.Blocks() as demo:
         save_mesh_name = "mesh.glb"
 
         #Do not modify output_path
-        output_path = "./Magic123_Gradio/out"
-        input_path = "./Magic123_Gradio/input"
+        output_path = "./Magic123_Gradio_Copy/out"
+        input_path = "./Magic123_Gradio_Copy/input"
         image_name = "input.png"
 
         #Create the folders needed for processing
@@ -41,21 +41,22 @@ with gr.Blocks() as demo:
         input_image.save(f"{input_path}/{image_name}")
 
         #run
-        cmd = f"python Magic123_Gradio/preprocess_image.py --path {input_path}/{image_name}"
+        cmd1 = f"python Magic123_Gradio/preprocess_image.py --path {input_path}/{image_name}"
+        cmd2 = f"bash scripts/magic123/run_both_priors.sh 0 nerf dmtet ./Magic123_Gradio_Copy/input 1 1 "
         try:
-            completed_process = subprocess.run(cmd.split(), stdout=subprocess.PIPE)
+            completed_process = subprocess.run(cmd1.split(), stdout=subprocess.PIPE)
             
             for i in tqdm.tqdm(range(50), desc="Finished image preprocessing..."):
                 time.sleep(0.01)
                     
-            main_gradio.generate_mesh(epoch)
+            completed_process = subprocess.run(cmd2.split(), stdout=subprocess.PIPE)
             
         except subprocess.CalledProcessError as e:
             print(f"Error occurred: {e}")
             print(e.stdout)
             print(e.stderr)
 
-        output_name = f"./Magic123_Gradio/out/magic123-nerf-dmtet/magic123_input_nerf_dmtet/mesh/mesh.glb"
+        output_name = f"./Magic123_Gradio_Copy/out/magic123-nerf-dmtet/magic123_input_nerf_dmtet/mesh/mesh.glb"
         shutil.copyfile(output_name, f"{save_mesh_path}/{save_mesh_name}")
         
         return f"{save_mesh_path}/{save_mesh_name}"
